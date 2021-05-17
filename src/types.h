@@ -57,7 +57,7 @@ typedef struct {
   BitBoard occupancies[3]; // 0 - white pieces, 1 - black pieces, 2 - both
   int squares[64];         // piece per square
   BitBoard checkers;       // checking piece squares
-  BitBoard pinned;        // pinned pieces
+  BitBoard pinned;         // pinned pieces
   uint64_t piecesCounts;   // "material key" - pieces left on the board
 
   Score mat; // material+psqt score updated incrementally
@@ -136,8 +136,6 @@ typedef struct {
   int8_t passedPawnKingProximity[2];
   int8_t rookOpenFile[2];
   int8_t rookSemiOpen[2];
-  int8_t rookOppositeKing[2];
-  int8_t rookAdjacentKing[2];
   int8_t rookTrapped[2];
   int8_t knightThreats[2][6];
   int8_t bishopThreats[2][6];
