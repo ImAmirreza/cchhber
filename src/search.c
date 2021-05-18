@@ -358,8 +358,8 @@ int Negamax(int alpha, int beta, int depth, ThreadData* thread, PV* pv) {
     MakeMove(move, board);
 
     int newDepth = depth;
-    if (singularExtension || doesCheck)       // extend checks
-      newDepth++;                             // apply the extension
+    if (singularExtension || doesCheck) // extend checks
+      newDepth++;                       // apply the extension
 
     // start of late move reductions
     int R = 1, score = -CHECKMATE;
@@ -511,6 +511,8 @@ int Quiesce(int alpha, int beta, ThreadData* thread, PV* pv) {
     alpha = eval;
 
   int bestScore = eval;
+  Move bestMove = NULL_MOVE;
+  int origAlpha = alpha;
 
   MoveList moveList;
   GenerateTacticalMoves(&moveList, board);
@@ -537,6 +539,7 @@ int Quiesce(int alpha, int beta, ThreadData* thread, PV* pv) {
 
     if (score > bestScore) {
       bestScore = score;
+      bestMove = move;
 
       if (score > alpha) {
         alpha = score;
@@ -552,6 +555,9 @@ int Quiesce(int alpha, int beta, ThreadData* thread, PV* pv) {
         break;
     }
   }
+
+  int TTFlag = bestScore >= beta ? TT_LOWER : bestScore <= origAlpha ? TT_UPPER : TT_EXACT;
+  TTPut(board->zobrist, 0, bestScore, TTFlag, bestMove, data->ply, data->evals[data->ply]);
 
   return bestScore;
 }
