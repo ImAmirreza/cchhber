@@ -165,6 +165,17 @@ void PrintUCIOptions() {
   printf("uciok\n");
 }
 
+int ReadLine(char* in) {
+  if (fgets(in, 8192, stdin) == NULL)
+    return 0;
+
+  size_t c = strcspn(in, "\r\n");
+  if (c < strlen(in))
+    in[c] = '\0';
+
+  return 1;
+}
+
 void UCILoop() {
   static char in[8192];
 
@@ -177,20 +188,7 @@ void UCILoop() {
   setbuf(stdin, NULL);
   setbuf(stdout, NULL);
 
-  PrintUCIOptions();
-
-  while (!searchParameters.quit) {
-    memset(&in[0], 0, sizeof(in));
-
-    fflush(stdout);
-
-    if (fgets(in, 8192, stdin) == NULL) {
-      if (ferror(stdin) || feof(stdin))
-        return;
-      else
-        continue;
-    }
-
+  while (ReadLine(in)) {
     if (in[0] == '\n')
       continue;
 
@@ -207,7 +205,8 @@ void UCILoop() {
     } else if (!strncmp(in, "stop", 4)) {
       searchParameters.stopped = 1;
     } else if (!strncmp(in, "quit", 4)) {
-      exit(0);
+      searchParameters.quit = 1;
+      break;
     } else if (!strncmp(in, "uci", 3)) {
       PrintUCIOptions();
     } else if (!strncmp(in, "board", 5)) {
@@ -235,6 +234,8 @@ void UCILoop() {
       threads = CreatePool(max(1, min(256, n)));
     }
   }
+
+  free(threads);
 }
 
 int GetOptionIntValue(char* in) {
