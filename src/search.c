@@ -305,7 +305,7 @@ int Negamax(int alpha, int beta, int depth, ThreadData* thread, PV* pv) {
         data->moves[data->ply++] = move;
         MakeMove(move, board);
 
-        score = -Quiesce(-probBeta, -probBeta + 1, thread, pv);
+        int score = -Quiesce(-probBeta, -probBeta + 1, thread, pv);
         if (score >= probBeta)
           score = -Negamax(-probBeta, -probBeta + 1, depth - 4, thread, pv);
 
