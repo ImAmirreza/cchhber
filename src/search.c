@@ -27,10 +27,8 @@
 #include "history.h"
 #include "move.h"
 #include "movegen.h"
-#include "pyrrhic/tbprobe.h"
 #include "search.h"
 #include "see.h"
-#include "tb.h"
 #include "thread.h"
 #include "timeman.h"
 #include "transposition.h"
@@ -79,10 +77,10 @@ void* UCISearch(void* arg) {
 
 int BestMove(Board* board, SearchParams* params, ThreadData* threads) {
   Move bestMove;
-  if ((bestMove = TBRootProbe(board))) {
-    printf("bestmove %s\n", MoveToStr(bestMove));
-    return 0;
-  }
+  // if ((bestMove = TBRootProbe(board))) {
+  //   printf("bestmove %s\n", MoveToStr(bestMove));
+  //   return 0;
+  // }
 
   pthread_t pthreads[threads->count];
   InitPool(board, params, threads);
@@ -225,46 +223,6 @@ int Negamax(int alpha, int beta, int depth, ThreadData* thread, PV* pv) {
     if ((tt->flags & TT_EXACT) || ((tt->flags & TT_LOWER) && ttScore >= beta) ||
         ((tt->flags & TT_UPPER) && ttScore <= alpha))
       return ttScore;
-  }
-
-  // tablebase - we do not do this at root
-  if (!isRoot) {
-    unsigned tbResult = TBProbe(board);
-
-    if (tbResult != TB_RESULT_FAILED) {
-      data->tbhits++;
-
-      int flag;
-      switch (tbResult) {
-      case TB_WIN:
-        score = TB_WIN_BOUND - data->ply;
-        flag = TT_LOWER;
-        break;
-      case TB_LOSS:
-        score = -TB_WIN_BOUND + data->ply;
-        flag = TT_UPPER;
-        break;
-      default:
-        score = 0;
-        flag = TT_EXACT;
-        break;
-      }
-
-      // if the tablebase gives us what we want, then we accept it's score and return
-      if ((flag & TT_EXACT) || ((flag & TT_LOWER) && score >= beta) || ((flag & TT_UPPER) && score <= alpha)) {
-        TTPut(board->zobrist, depth, score, flag, 0, data->ply, 0);
-        return score;
-      }
-
-      // for pv node searches we adjust our a/b search accordingly
-      if (isPV) {
-        if (flag & TT_LOWER) {
-          bestScore = score;
-          alpha = max(alpha, score);
-        } else
-          maxScore = score;
-      }
-    }
   }
 
   // pull previous static eval from tt - this is depth independent

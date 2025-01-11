@@ -29,7 +29,6 @@
 #include "transposition.h"
 #include "uci.h"
 #include "util.h"
-#include "pyrrhic/tbprobe.h"
 
 #define NAME "Berserk"
 #define VERSION "4.2.0"
@@ -235,14 +234,15 @@ void UCILoop() {
       free(threads);
       threads = CreatePool(max(1, min(256, n)));
       printf("info string set Threads to value %d\n", n);
-    } else if (!strncmp(in, "setoption name SyzygyPath value ", 32)) {
-      int success = tb_init(in + 32);
-      if (success)
-        printf("info string set SyzygyPath to value %s\n", in + 32);
+    } 
+    // else if (!strncmp(in, "setoption name SyzygyPath value ", 32)) {
+      // int success = tb_init(in + 32);
+      // if (success)
+      //   printf("info string set SyzygyPath to value %s\n", in + 32);
       else
         printf("info string FAILED!\n");
     }
-  }
+  
 
   free(threads);
 }

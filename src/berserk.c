@@ -39,7 +39,7 @@ int main(int argc, char** argv) {
   InitZobristKeys();
   InitPruningAndReductionTables();
 
-  TTInit(32);
+  TTInit(1);
 
   // Compliance for OpenBench
   if (argc > 1 && !strncmp(argv[1], "bench", 5)) {
