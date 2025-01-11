@@ -571,8 +571,8 @@ inline void PrintInfo(PV* pv, int score, int depth, ThreadData* thread) {
   if (score > MATE_BOUND) {
     int movesToMate = (CHECKMATE - score) / 2 + ((CHECKMATE - score) & 1);
 
-    printf("info depth %d seldepth %d nodes %lld nps %lld tbhits %lld hashfull %d time %lld score mate %d pv ", depth,
-           thread->data.seldepth, nodes, nps, tbhits, hashfull, time, movesToMate);
+    printf("info depth %d seldepth %d nodes %lld nps %lld hashfull %d time %lld score mate %d pv ", depth,
+           thread->data.seldepth, nodes, nps, hashfull, time, movesToMate);
   } else if (score < -MATE_BOUND) {
     int movesToMate = (CHECKMATE + score) / 2 - ((CHECKMATE - score) & 1);
 
